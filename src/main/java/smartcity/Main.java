@@ -18,18 +18,18 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         try {
-            // Создаем директорию data если её нет
+
             createDataDirectory();
 
-            // Генерация всех датасетов
+
             System.out.println("=== Generating Test Datasets ===");
             generateAllDatasets();
 
-            // Анализ предоставленного графа
+
             System.out.println("\n=== Analyzing Provided Graph ===");
             analyzeGraph("data/task.json");
 
-            // Анализ всех датасетов
+
             System.out.println("\n=== Analyzing All Datasets ===");
             analyzeAllDatasets();
 
@@ -73,19 +73,19 @@ public class Main {
                     graph.getEdgeCount() + " edges");
         }
 
-        // Generate the specific task.json from assignment
+
         generateTaskJson();
     }
 
     public static void generateTaskJson() throws IOException {
         DataGenerator generator = new DataGenerator();
 
-        // Create the exact graph from the assignment
+
         Graph graph = new Graph(8, true);
         graph.setWeightModel("edge");
         graph.setSource(4);
 
-        // Add edges as specified in assignment
+
         graph.addEdge(0, 1, 3);
         graph.addEdge(1, 2, 2);
         graph.addEdge(2, 3, 4);
@@ -98,7 +98,7 @@ public class Main {
         System.out.println("Generated task.json: " + graph.getN() + " nodes, " +
                 graph.getEdgeCount() + " edges");
 
-        // Print graph structure for verification
+
         System.out.println("Graph structure:");
         System.out.println("  Cycle: 1 -> 2 -> 3 -> 1");
         System.out.println("  Path: 4 -> 5 -> 6 -> 7");
@@ -117,7 +117,7 @@ public class Main {
                 System.out.println("Source node: " + graph.getSource());
             }
 
-            // SCC анализ
+
             PerformanceMetrics.start("SCC");
             TarjanSCC tarjan = new TarjanSCC(graph);
             List<List<Integer>> sccs = tarjan.findSCCs();
@@ -128,7 +128,7 @@ public class Main {
                 System.out.println("  SCC " + i + ": " + sccs.get(i) + " (size: " + sccs.get(i).size() + ")");
             }
 
-            // Condensation graph
+
             PerformanceMetrics.start("Condensation");
             Graph condensation = tarjan.buildCondensationGraph();
             CondensationGraph cg = tarjan.getCondensationGraphObject();
@@ -137,7 +137,6 @@ public class Main {
             System.out.println("Condensation graph: " + condensation.getN() + " components, " +
                     condensation.getEdgeCount() + " edges between components");
 
-            // Topological sort of condensation graph
             PerformanceMetrics.start("Topological");
             KahnTopological topological = new KahnTopological();
             List<Integer> topoOrder = topological.topologicalSort(condensation);
@@ -145,21 +144,21 @@ public class Main {
 
             System.out.println("Topological Order of Components: " + topoOrder);
 
-            // Get task execution order
+
             List<Integer> taskOrder = topological.getTaskOrderFromComponents(topoOrder, sccs);
             System.out.println("Task Execution Order: " + taskOrder);
 
-            // Статистика компонент
+
             CondensationGraph.ComponentStatistics stats = cg.getStatistics();
             System.out.println("\n" + stats.toString());
 
-            // Анализ источников и стоков
+
             List<Integer> sourceComps = cg.findSourceComponents();
             List<Integer> sinkComps = cg.findSinkComponents();
             System.out.println("Source components (can start first): " + sourceComps);
             System.out.println("Sink components (can finish last): " + sinkComps);
 
-            // Shortest path from source in ORIGINAL GRAPH (если это DAG)
+
             if (graph.getSource() != -1 && topological.isDAG(graph)) {
                 PerformanceMetrics.start("ShortestPath");
                 DAGShortestPath shortestPath = new DAGShortestPath();
@@ -173,7 +172,7 @@ public class Main {
                     }
                 }
 
-                // Show one example path
+
                 if (graph.getN() > graph.getSource() + 1) {
                     int target = graph.getN() - 1;
                     DAGShortestPath.Result pathResult = shortestPath.findShortestPath(graph, graph.getSource(), target);
@@ -186,11 +185,11 @@ public class Main {
                 System.out.println("Using condensation graph (DAG) for path analysis instead");
             }
 
-            // Shortest path in CONDENSATION GRAPH (всегда DAG)
+
             PerformanceMetrics.start("CondensationShortestPath");
             DAGShortestPath condensationSP = new DAGShortestPath();
 
-            // Find source component
+
             int sourceComponent = cg.getComponentId(graph.getSource());
             DAGShortestPath.Result condensationResult = condensationSP.findShortestPath(condensation, sourceComponent, -1);
             PerformanceMetrics.end("CondensationShortestPath");
@@ -203,7 +202,7 @@ public class Main {
                 }
             }
 
-            // Critical path (longest path) in CONDENSATION GRAPH
+
             PerformanceMetrics.start("CriticalPath");
             CriticalPath criticalPath = new CriticalPath();
             int startComponent = sourceComps.isEmpty() ? 0 : sourceComps.get(0);
@@ -217,14 +216,14 @@ public class Main {
                 System.out.println("  Length: " + cpResult.distances[endComponent]);
                 System.out.println("  Path through components: " + cpResult.path);
 
-                // Convert component path to node path
+
                 List<Integer> nodePath = new ArrayList<>();
                 for (int compId : cpResult.path) {
                     List<Integer> nodesInComponent = cg.getComponent(compId);
                     if (nodesInComponent.size() == 1) {
                         nodePath.add(nodesInComponent.get(0));
                     } else {
-                        // For cyclic components, add all nodes or representative
+
                         nodePath.addAll(nodesInComponent);
                     }
                 }
@@ -233,7 +232,7 @@ public class Main {
                 System.out.println("\nNo critical path found from component " + startComponent + " to " + endComponent);
             }
 
-            // Critical path in ORIGINAL GRAPH (только если это DAG)
+
             if (topological.isDAG(graph)) {
                 PerformanceMetrics.start("OriginalCriticalPath");
                 CriticalPath originalCriticalPath = new CriticalPath();
@@ -249,7 +248,6 @@ public class Main {
                 }
             }
 
-            // Performance metrics
             PerformanceMetrics.printSummary();
             PerformanceMetrics.resetAll();
 
@@ -257,7 +255,7 @@ public class Main {
             System.err.println("Error reading file " + filename + ": " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error analyzing graph " + filename + ": " + e.getMessage());
-            // e.printStackTrace(); // Убираем stack trace для чистоты вывода
+
         }
     }
 
