@@ -25,11 +25,11 @@ public class DAGShortestPath implements Metrics {
     public Result findShortestPath(Graph graph, int source, int target) {
         reset();
 
-        // Get topological order
+
         KahnTopological topological = new KahnTopological();
         List<Integer> topoOrder = topological.topologicalSort(graph);
 
-        // Merge metrics
+
         this.dfsCount += topological.getDFSCount();
         this.edgeRelaxations += topological.getEdgeRelaxations();
         this.kahnOperations += topological.getKahnOperations();
@@ -40,7 +40,8 @@ public class DAGShortestPath implements Metrics {
         Arrays.fill(pred, -1);
         dist[source] = 0;
 
-        // Process vertices in topological order
+
+
         for (int u : topoOrder) {
             incrementDFSCount();
             if (dist[u] != Double.POSITIVE_INFINITY) {
@@ -56,7 +57,7 @@ public class DAGShortestPath implements Metrics {
             }
         }
 
-        // Reconstruct path if target is specified
+
         List<Integer> path = Collections.emptyList();
         if (target != -1 && target < graph.getN() && dist[target] != Double.POSITIVE_INFINITY) {
             path = reconstructPath(pred, source, target);
@@ -68,7 +69,7 @@ public class DAGShortestPath implements Metrics {
     private List<Integer> reconstructPath(int[] pred, int source, int target) {
         List<Integer> path = new ArrayList<>();
         if (pred[target] == -1 && target != source) {
-            return path; // No path exists
+            return path;
         }
 
         for (int v = target; v != -1; v = pred[v]) {
@@ -77,7 +78,7 @@ public class DAGShortestPath implements Metrics {
         }
         Collections.reverse(path);
 
-        // Verify path starts from source
+
         if (path.isEmpty() || path.get(0) != source) {
             return Collections.emptyList();
         }
@@ -85,7 +86,7 @@ public class DAGShortestPath implements Metrics {
         return path;
     }
 
-    // Metrics implementation
+
     @Override
     public void incrementDFSCount() { dfsCount++; }
     @Override

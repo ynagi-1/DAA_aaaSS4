@@ -12,13 +12,13 @@ public class CriticalPath {
     }
 
     public DAGShortestPath.Result findCriticalPath(Graph graph, int source, int target) {
-        // Create a copy with negated weights for longest path
+
         Graph negatedGraph = createNegatedGraph(graph);
 
-        // Find shortest path in negated graph = longest path in original
+
         DAGShortestPath.Result result = shortestPath.findShortestPath(negatedGraph, source, target);
 
-        // Convert distances back to positive
+
         for (int i = 0; i < result.distances.length; i++) {
             if (result.distances[i] != Double.POSITIVE_INFINITY) {
                 result.distances[i] = -result.distances[i];
