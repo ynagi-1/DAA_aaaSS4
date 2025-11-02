@@ -106,27 +106,6 @@ All algorithms operate on edge weights rather than node durations for consistenc
 - Java 11 or higher
 - Maven 3.6+
 
-### Commands
-
-```bash
-# Clone and build
-git clone <repository-url>
-cd scheduling
-mvn clean compile
-
-# Run all tests
-mvn test
-
-# Generate datasets only
-mvn exec:java -Dexec.mainClass="smartcity.GenerateData"
-
-# Run complete analysis
-mvn exec:java -Dexec.mainClass="smartcity.Main"
-
-# Run specific tests
-mvn test -Dtest=SCCTest
-mvn test -Dtest=IntegrationTest
-```
 
 ## Performance Metrics
 
@@ -279,7 +258,7 @@ test: add integration tests and enhance Vertex model
 docs: add datasets and comprehensive README
 chore: final project cleanup and optimization
 perf: add detailed performance metrics and optimization
-fix: correct test expectations and algorithm validations
+
 ```
 
 ## Conclusion
