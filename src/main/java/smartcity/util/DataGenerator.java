@@ -83,32 +83,32 @@ public class DataGenerator {
     private void generateSimpleCyclic(Graph graph) {
         int n = graph.getN();
 
-        // Create 1-2 simple cycles
+
         if (n >= 3) {
-            // Cycle 1: 0->1->2->0
+
             graph.addEdge(0, 1, randomWeight());
             graph.addEdge(1, 2, randomWeight());
             graph.addEdge(2, 0, randomWeight());
         }
 
         if (n >= 6) {
-            // Cycle 2: 3->4->5->3
+
             graph.addEdge(3, 4, randomWeight());
             graph.addEdge(4, 5, randomWeight());
             graph.addEdge(5, 3, randomWeight());
         }
 
-        // Add some additional random edges
+
         addRandomEdges(graph, 0.2);
 
-        // Set source to first node
+
         graph.setSource(0);
     }
 
     private void generatePureDAG(Graph graph) {
         int n = graph.getN();
 
-        // Create a layered DAG
+
         for (int u = 0; u < n; u++) {
             for (int v = u + 1; v < Math.min(u + 4, n); v++) {
                 if (random.nextDouble() < 0.6) {
@@ -123,14 +123,14 @@ public class DataGenerator {
     private void generateMixedStructure(Graph graph) {
         int n = graph.getN();
 
-        // One small cycle
+
         if (n >= 3) {
             graph.addEdge(0, 1, randomWeight());
             graph.addEdge(1, 2, randomWeight());
             graph.addEdge(2, 0, randomWeight());
         }
 
-        // DAG structure for the rest
+
         for (int u = 3; u < n; u++) {
             for (int v = u + 1; v < Math.min(u + 3, n); v++) {
                 if (random.nextDouble() < 0.7) {
@@ -139,7 +139,7 @@ public class DataGenerator {
             }
         }
 
-        // Some cross edges
+
         addRandomEdges(graph, 0.15);
 
         graph.setSource(0);
@@ -148,32 +148,32 @@ public class DataGenerator {
     private void generateMultipleSCCs(Graph graph) {
         int n = graph.getN();
 
-        // Create 3 SCCs
+
         if (n >= 9) {
             createSCC(graph, 0, 2); // SCC 1 (3 nodes)
             createSCC(graph, 3, 5); // SCC 2 (3 nodes)
             createSCC(graph, 6, 8); // SCC 3 (3 nodes)
 
-            // Connect SCCs to form DAG
+
             graph.addEdge(2, 3, randomWeight());
             graph.addEdge(5, 6, randomWeight());
         } else {
-            // For smaller graphs, create 2 SCCs
+
             createSCC(graph, 0, 1); // SCC 1 (2 nodes)
             createSCC(graph, 2, 3); // SCC 2 (2 nodes)
             graph.addEdge(1, 2, randomWeight());
         }
 
-        // Add remaining nodes as individual components
+
         int start = (n >= 9) ? 9 : 4;
         for (int i = start; i < n; i++) {
-            // Isolated nodes or small chains
+
             if (i > start && random.nextDouble() < 0.5) {
                 graph.addEdge(i-1, i, randomWeight());
             }
         }
 
-        // Add some random cross edges
+
         addRandomEdges(graph, 0.1);
 
         graph.setSource(0);
@@ -182,7 +182,7 @@ public class DataGenerator {
     private void generateSparseMixed(Graph graph) {
         int n = graph.getN();
 
-        // Sparse graph with few cycles
+
         for (int i = 0; i < n * 1.5; i++) {
             int u = random.nextInt(n);
             int v = random.nextInt(n);
@@ -197,7 +197,6 @@ public class DataGenerator {
     private void generateDenseMixed(Graph graph) {
         int n = graph.getN();
 
-        // Dense graph with potential cycles
         for (int u = 0; u < n; u++) {
             for (int v = 0; v < n; v++) {
                 if (u != v && random.nextDouble() < 0.3) {
@@ -212,7 +211,7 @@ public class DataGenerator {
     private void generatePerformanceTestSparse(Graph graph) {
         int n = graph.getN();
 
-        // Sparse DAG for performance testing
+
         for (int u = 0; u < n; u++) {
             int edgesPerNode = 1 + random.nextInt(3);
             for (int j = 0; j < edgesPerNode; j++) {
@@ -229,7 +228,7 @@ public class DataGenerator {
     private void generatePerformanceTestDense(Graph graph) {
         int n = graph.getN();
 
-        // Dense graph for performance testing
+
         for (int u = 0; u < n; u++) {
             for (int v = u + 1; v < Math.min(u + 10, n); v++) {
                 if (random.nextDouble() < 0.7) {
@@ -244,13 +243,12 @@ public class DataGenerator {
     private void generateComplexCycles(Graph graph) {
         int n = graph.getN();
 
-        // Multiple interconnected cycles
+
         for (int i = 0; i < n - 1; i++) {
             graph.addEdge(i, i + 1, randomWeight());
         }
         graph.addEdge(n - 1, 0, randomWeight()); // Big cycle
 
-        // Additional cross cycles
         for (int i = 0; i < n / 2; i++) {
             int a = random.nextInt(n);
             int b = random.nextInt(n);
@@ -266,7 +264,7 @@ public class DataGenerator {
     }
 
     private void createSCC(Graph graph, int start, int end) {
-        // Create a cycle covering vertices start to end
+
         for (int i = start; i < end; i++) {
             graph.addEdge(i, i + 1, randomWeight());
         }
@@ -289,7 +287,7 @@ public class DataGenerator {
     }
 
     public void saveGraphToJSON(Graph graph, String filename, int source) throws IOException {
-        // Create directory if it doesn't exist
+
         java.nio.file.Path path = Paths.get(filename);
         java.nio.file.Path parentDir = path.getParent();
         if (parentDir != null && !Files.exists(parentDir)) {
@@ -317,16 +315,14 @@ public class DataGenerator {
         Files.write(path, json.toString(2).getBytes());
     }
 
-    /**
-     * Generate a graph with specific characteristics for testing
-     */
+
     public Graph generateCustomGraph(int nodes, int edges, boolean hasCycles, boolean isDense) {
         Graph graph = new Graph(nodes, true);
         graph.setWeightModel("edge");
         graph.setSource(0);
 
         if (hasCycles) {
-            // Add at least one cycle
+
             if (nodes >= 3) {
                 graph.addEdge(0, 1, randomWeight());
                 graph.addEdge(1, 2, randomWeight());
@@ -334,7 +330,7 @@ public class DataGenerator {
             }
         }
 
-        // Add remaining edges
+
         int edgesAdded = graph.getEdgeCount();
         double density = isDense ? 0.4 : 0.1;
 
@@ -346,7 +342,7 @@ public class DataGenerator {
                 edgesAdded++;
             }
 
-            // Prevent infinite loop
+
             if (edgesAdded >= nodes * (nodes - 1) * 0.9) {
                 break;
             }
